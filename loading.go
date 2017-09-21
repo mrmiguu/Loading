@@ -5,7 +5,7 @@ import "time"
 
 func Ing(proc string, d ...time.Duration) chan<- bool {
 	c := make(chan bool)
-	println(proc + ".")
+	println(proc + "...")
 	space := "   "
 	spaces := strings.Repeat(" ", len(proc))
 	var left bool
@@ -30,19 +30,23 @@ func Ing(proc string, d ...time.Duration) chan<- bool {
 				return
 			}
 			strs := strings.Split(space, "")
-			strs[i] = "."
-			dot := strings.Join(strs, "")
-			println(spaces + dot)
 			if !left && i == 2 {
 				left = true
+				strs[i] = `|`
+				i--
 			} else if left && i == 0 {
 				left = false
-			}
-			if !left {
+				strs[i] = `|`
 				i++
-			} else {
+			} else if !left {
+				strs[i] = `\`
+				i++
+			} else if left {
+				strs[i] = `/`
 				i--
 			}
+			dot := strings.Join(strs, "")
+			println(spaces + dot)
 		}
 	}()
 	return c
