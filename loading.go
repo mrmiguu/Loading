@@ -3,12 +3,10 @@ package load
 import "strings"
 import "time"
 
-func Ing(proc string, d ...time.Duration) chan<- bool {
+func New(proc string, d ...time.Duration) chan<- bool {
 	c := make(chan bool)
 	println(proc + "...")
-	space := "   "
 	spaces := strings.Repeat(" ", len(proc))
-	var left bool
 	go func() {
 		var t time.Ticker
 		if len(d) > 1 {
@@ -22,31 +20,13 @@ func Ing(proc string, d ...time.Duration) chan<- bool {
 				}
 			}()
 		}
-		i := 1
 		for done := range c {
 			if done {
 				t.Stop()
 				println(spaces + "!!!")
 				return
 			}
-			strs := strings.Split(space, "")
-			if !left && i == 2 {
-				left = true
-				strs[i] = `|`
-				i--
-			} else if left && i == 0 {
-				left = false
-				strs[i] = `|`
-				i++
-			} else if !left {
-				strs[i] = `\`
-				i++
-			} else if left {
-				strs[i] = `/`
-				i--
-			}
-			dot := strings.Join(strs, "")
-			println(spaces + dot)
+			println(spaces + "...")
 		}
 	}()
 	return c
