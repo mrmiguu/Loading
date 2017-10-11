@@ -3,8 +3,9 @@ package load
 import "strings"
 import "time"
 
-func New(proc string, d ...time.Duration) chan<- bool {
+func New(proc string, d ...time.Duration) (done chan<- bool) {
 	c := make(chan bool)
+	done = c
 	println(proc + "...")
 	spaces := strings.Repeat(" ", len(proc))
 	go func() {
@@ -16,12 +17,12 @@ func New(proc string, d ...time.Duration) chan<- bool {
 			t = *time.NewTicker(d[0])
 			go func() {
 				for range t.C {
-					c <- false
+					done <- false
 				}
 			}()
 		}
-		for done := range c {
-			if done {
+		for is := range c {
+			if is {
 				t.Stop()
 				println(spaces + "!!!")
 				return
@@ -29,5 +30,9 @@ func New(proc string, d ...time.Duration) chan<- bool {
 			println(spaces + "...")
 		}
 	}()
-	return c
+	return
+}
+
+func Is(done chan<- bool) {
+	done <- true
 }
