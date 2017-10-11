@@ -24,6 +24,7 @@ func New(proc string, d ...time.Duration) (done chan<- bool) {
 		for is := range c {
 			if is {
 				t.Stop()
+				close(c)
 				println(spaces + "!!!")
 				return
 			}
