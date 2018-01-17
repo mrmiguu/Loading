@@ -35,13 +35,18 @@ func New(PROC string, addtl ...chan<- bool) (DONE chan<- bool) {
 				d := false
 				if found && proc == PROC { // found
 					d = is
-					delete(addtls, a)
+					if is {
+						delete(addtls, a)
+					}
 				}
 				addtlsl.Unlock()
 
 				select {
 				case a <- d:
 				default:
+					if is {
+						a <- true
+					}
 				}
 			}
 			if is {
