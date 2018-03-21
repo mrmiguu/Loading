@@ -9,7 +9,41 @@ import (
 var (
 	addtls  = make(map[chan<- bool]string)
 	addtlsl sync.Mutex
+
+	spinner = [...]rune{'/', '-', '\\', '|', '!'}
 )
+
+type Proc struct {
+	initOnce, doneOnce sync.Once
+
+	Name string
+
+	frame int
+}
+
+func (p *Proc) init() {
+	p.initOnce.Do(func() {
+	})
+}
+
+func (p *Proc) Step() {
+	p.init()
+	p.print()
+	p.frame = (p.frame + 1) % (len(spinner) - 1)
+}
+
+func (p Proc) print() {
+	print(p.Name + ":" + string([]rune{spinner[p.frame]}) + "\r")
+}
+
+func (p *Proc) Done() {
+	p.init()
+	p.doneOnce.Do(func() {
+		p.frame = len(spinner) - 1
+		p.print()
+		println()
+	})
+}
 
 // New adds a process tracker.
 func New(PROC string, addtl ...chan<- bool) (DONE chan<- bool) {
